@@ -1,12 +1,17 @@
 <h1><%= @story.name %></h1>
-<h2><%= @story.public_state %></h2>
-<p><%= @story.public_description :html %></p>
-<p>
-ETA = <%= @story.eta %>
-</p>
-Comments:
-<ol>
-  <% @comments.each do |comm| -%>
-    <li><%= comm.public_text %></li>
+<h2>
+  <%= t("story.public_states.#{@story.public_state}") %>
+  <% if @story.eta != :unknown -%>
+    (<%= render_eta @story.eta %>)
   <% end -%>
-</ol>
+</h2>
+
+<div id="description"><%= @story.public_description :html %></div>
+<div id="comments">
+  <h3><%= t('.comments_of_the_team') %>:</h3>
+  <ul>
+    <% @comments.each do |comm| -%>
+      <li><span class="comment-date"><%= l comm.commented_at, format: :short %></span><%= comm.public_text %></li>
+    <% end -%>
+  </ul>
+</div>

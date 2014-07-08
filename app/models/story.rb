@@ -41,6 +41,10 @@ class Story
     unless @comments
       @comments = Comment.for_story self.id
       @comments = @comments.select{|comm| comm.text =~ /\[#{ENV['public_comment_tag']}\]/}
+      if @comments
+        # sort latest first
+        @comments = @comments.sort{|a,b| b.commented_at <=> a.commented_at }
+      end
     end
     @comments
   end

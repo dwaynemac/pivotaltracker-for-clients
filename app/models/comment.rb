@@ -22,6 +22,10 @@ class Comment
     end
   end
 
+  def commented_at
+    DateTime.parse created_at
+  end
+
   private
 
   def self.initialize_from_response(response_body)

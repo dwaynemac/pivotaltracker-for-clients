@@ -20,4 +20,17 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  stories:
+    show:
+      comments_of_the_team: Comments by the team
+  story:
+    public_states:
+      unscheduled: Unscheduled
+      scheduled: Scheduled
+      inprogress: Work in progress
+      finished: Finished
+    eta:
+      unknown: Unknown
+      next_deploy: On next server update
+
+      
