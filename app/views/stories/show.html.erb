@@ -1,0 +1,8 @@
+<h1><%= @story.name %></h1>
+<h2><%= @story.current_state %></h2>
+<p>
+ETA = <%= @story.eta %>
+</p>
+<p>
+<%= link_to t('see_in_pivotal'), @story.url, target: '_blank' %>
+</p>

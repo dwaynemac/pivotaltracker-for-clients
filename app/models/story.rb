@@ -1,9 +1,80 @@
 class Story
+  include ActiveModel::Model
 
-  HOST = "https://www.pivotaltracker.com/services/v5"
-  PROJECT = ""
+  ATTRIBUTES = [:id,:current_state, :name, :url]
+  ATTRIBUTES.each do |att|
+    attr_accessor att
+  end
 
-  def find(id)
-    Typhoeus.get("#{HOST}/projects/#{PROJECT}/stories/#{id}")
+  def self.find(id)
+    response = Typhoeus.get("#{ENV['api_host']}/projects/#{ENV['project_id']}/stories/#{id}",
+                 params: { fields: ATTRIBUTES.join(',')},
+                 headers: { 'X-TrackerToken' => ENV['pivotal_token']}
+                )
+    if response.success?
+      initialize_from_response(response.body)
+    else
+      nil
+    end
+  end
+
+  # returns ETA(Date), :next_deploy or :unknown
+  def eta
+    case public_state
+    when :finished
+      :next_deploy
+    when :scheduled, :inprogress
+      next_iterations = Iteration.paginate
+      story_eta = next_iterations.select{|i| id.in?(i.story_ids) }.first.try :finish
+      if story_eta
+        Date.parse story_eta
+      else
+        :unknown
+      end
+    else
+      :unknown
+    end
+  end
+
+  # a simpler mapping of states 
+  # for clients view
+  # V5 notes:
+  #   current_state valid values:
+  #     - unscheduled: in icebox 
+  #     - unstarted: in backlog
+  #
+  #     - started
+  #     - finished
+  #     - delivered
+  #     - rejected
+  #
+  #     - accepted: finished
+  #
+  # Public states
+  #   1. unscheduled
+  #   2. scheduled
+  #   3. inprogress
+  #   4. finished
+  def public_state
+    case current_state.to_sym
+    when :unscheduled
+      :unscheduled
+    when :unstarted
+      :scheduled
+    when :started, :finished, :delivered, :rejected
+      :inprogress
+    when :accepted
+      :finished
+    end
+  end
+
+  private
+
+  def self.initialize_from_response(response_body)
+    self.new supported_attributes ActiveSupport::JSON.decode(response_body)
+  end
+
+  def self.supported_attributes(hash)
+    hash.select{|k,v| k.to_sym.in?(ATTRIBUTES) }
   end
 end
