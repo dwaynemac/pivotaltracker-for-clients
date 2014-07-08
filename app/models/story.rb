@@ -20,18 +20,20 @@ class Story
 
   # @argument format [Symbol] can be :plain or :html (:plain)
   def public_description(format = :plain)
-    m = description.match(/\[#{ENV['begin_public_observations_tag']}\](.*)\[#{ENV['end_public_observations_tag']}\]/m)
-    pd = m.try :[], 1
-    case format
-    when :plain
-      pd
-    when :html
-      if m
-        markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
-        markdown.render( pd ).html_safe
+    if description
+      m = description.match(/\[#{ENV['begin_public_observations_tag']}\](.*)\[#{ENV['end_public_observations_tag']}\]/m)
+      pd = m.try :[], 1
+      case format
+      when :plain
+        pd
+      when :html
+        if m
+          markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
+          markdown.render( pd ).html_safe
+        end
+      else
+        pd
       end
-    else
-      pd
     end
   end
 
