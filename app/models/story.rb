@@ -1,7 +1,7 @@
 class Story
   include ActiveModel::Model
 
-  ATTRIBUTES = [:id,:current_state, :name, :url]
+  ATTRIBUTES = [:id,:current_state, :name, :description, :url]
   ATTRIBUTES.each do |att|
     attr_accessor att
   end
@@ -16,6 +16,31 @@ class Story
     else
       nil
     end
+  end
+
+  # @argument format [Symbol] can be :plain or :html (:plain)
+  def public_description(format = :plain)
+    m = description.match(/\[#{ENV['begin_public_observations_tag']}\](.*)\[#{ENV['end_public_observations_tag']}\]/m)
+    pd = m.try :[], 1
+    case format
+    when :plain
+      pd
+    when :html
+      if m
+        markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
+        markdown.render( pd ).html_safe
+      end
+    else
+      pd
+    end
+  end
+
+  def comments
+    unless @comments
+      @comments = Comment.for_story self.id
+      @comments = @comments.select{|comm| comm.text =~ /\[#{ENV['public_comment_tag']}\]/}
+    end
+    @comments
   end
 
   # returns ETA(Date), :next_deploy or :unknown

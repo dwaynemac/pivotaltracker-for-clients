@@ -8,3 +8,6 @@
 api_host: https://www.pivotaltracker.com/services/v5
 pivotal_token: xxx
 project_id: 1234
+public_comment_tag: public
+begin_public_observations_tag: beginpublic
+end_public_observations_tag: endpublic

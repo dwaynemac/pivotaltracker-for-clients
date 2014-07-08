@@ -1,8 +1,15 @@
 <h1><%= @story.name %></h1>
 <h2><%= @story.public_state %></h2>
+<p><%= @story.public_description :html %></p>
 <p>
 ETA = <%= @story.eta %>
 </p>
+Comments:
+<ol>
+  <% @comments.each do |comm| -%>
+    <li><%= comm.public_text %></li>
+  <% end -%>
+</ol>
 <p>
 <%= link_to t('see_in_pivotal'), @story.url, target: '_blank' %>
 </p>
