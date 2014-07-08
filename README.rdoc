@@ -5,3 +5,9 @@
   set your credentials in config/application.yml
 
   redirect your clients to http://your-deploy-url/stories/:story_id
+
+== Tracker
+
+Tracker for this project:
+
+https://www.pivotaltracker.com/n/projects/1118408
